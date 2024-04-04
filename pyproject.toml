@@ -2,8 +2,8 @@
 requires = ["setuptools>=69.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages]
-find = {}
+[tool.setuptools.packages.find]
+exclude = ["tests"]
 
 [project]
 name = "chromacache"
@@ -32,6 +32,9 @@ dependencies = [
   "sentence-transformers==2.2.2",
   "mistralai==0.0.12"
 ]
+
+[project.optional-dependencies]
+dev = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/Lyon-NLP/chroma_cache"
