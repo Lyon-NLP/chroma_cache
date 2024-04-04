@@ -9,8 +9,8 @@ find = {}
 name = "chromacache"
 version = "0.0.1"
 authors = [
-  { name="Mathieu Ciancone", email="mathieu@wikit.ai" }
-  { name="Imène Kerboua, email="imenelkerboua@gmail.com"},
+  { name="Mathieu Ciancone", email="mathieu@wikit.ai" },
+  { name="Imene Kerboua", email="imenelkerboua@gmail.com"}
 ]
 description = "A helper tool that simplifies caching embeddings for reusability."
 keywords = ["chromadb", "vectorestore", "embeddings", "cache"]
