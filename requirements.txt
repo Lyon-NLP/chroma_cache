@@ -7,3 +7,6 @@ cohere==4.41,
 laser_encoders==0.0.1,
 sentence-transformers==2.2.2,
 mistralai==0.0.12
+
+# if using python > 3.10 : # fix Win11 + python 3.11 + faiseq incompatibility using this : (run as admin)
+# fairseq git+https://github.com/liyaodev/fairseq.git 
