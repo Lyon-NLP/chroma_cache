@@ -1,6 +1,6 @@
 import torch
-from sentence_transformers import SentenceTransformer
 from chromadb import Documents, Embeddings
+from sentence_transformers import SentenceTransformer
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
 

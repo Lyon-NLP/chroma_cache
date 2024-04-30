@@ -1,13 +1,15 @@
 try:
-    __import__('pysqlite3')
+    __import__("pysqlite3")
     import sys
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 except:
     pass
 
 from abc import ABC, abstractmethod
+
 import tiktoken
-from chromadb import EmbeddingFunction, Documents, Embeddings
+from chromadb import Documents, EmbeddingFunction, Embeddings
 
 
 class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
@@ -74,5 +76,4 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         Returns:
             Embeddings: list of embeddings
         """
-
         raise NotImplementedError()

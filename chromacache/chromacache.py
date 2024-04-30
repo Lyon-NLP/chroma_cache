@@ -1,10 +1,11 @@
 try:
     import chromadb
-    from chromadb import EmbeddingFunction, Documents, Embeddings
+    from chromadb import Documents, EmbeddingFunction, Embeddings
 except Exception:
-    __import__('pysqlite3')
+    __import__("pysqlite3")
     import sys
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 
     import chromadb
     from chromadb import EmbeddingFunction
@@ -37,7 +38,9 @@ class ChromaCache:
         self.client = chromadb.PersistentClient(path=path_to_chromadb)
         collection_name = embedding_function.model_name.replace("/", "-")[:63]
         self.collection = self.client.get_or_create_collection(
-            name=collection_name, embedding_function=self.embedding_function,  metadata={"hnsw:space": "cosine"}
+            name=collection_name,
+            embedding_function=self.embedding_function,
+            metadata={"hnsw:space": "cosine"},
         )
 
     @staticmethod
@@ -55,6 +58,7 @@ class ChromaCache:
 
         Args:
             sentences (Documents): the list of strings that must be encoded
+            **kwargs: additional keyword arguments.
 
         Returns:
             Embeddings: the list of embeddings corresponding the the list of strings

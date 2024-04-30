@@ -1,12 +1,12 @@
 import os
 import time
+
 from chromadb import Documents, Embeddings
 from dotenv import load_dotenv
 from mistralai.client import MistralClient
 from mistralai.exceptions import MistralAPIException
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-
 
 # load the API key from .env
 load_dotenv()
@@ -29,7 +29,6 @@ class MistralAIEmbeddingFunction(AbstractEmbeddingFunction):
 
         self.client = MistralClient()
 
-
     @property
     def model_name(self):
         return self._model_name
@@ -40,25 +39,29 @@ class MistralAIEmbeddingFunction(AbstractEmbeddingFunction):
                 model=self.model_name,
                 input=documents,
             )
-            time.sleep(.5) # rate limit of 2 requests per seconds
+            time.sleep(0.5)  # rate limit of 2 requests per seconds
             return [emb.embedding for emb in embeddings_batch_response.data]
-        
+
         except MistralAPIException as e:
             if "Too many tokens in batch." in e.message:
                 subbatches = self.split_big_batches(documents)
                 embeddings = []
                 for batch in subbatches:
                     embeddings_batch_response = self.client.embeddings(
-                                    model=self.model_name,
-                                    input=batch,
-                                )
-                    time.sleep(.5) # rate limit of 2 requests per seconds
-                    embeddings.extend([emb.embedding for emb in embeddings_batch_response.data])
+                        model=self.model_name,
+                        input=batch,
+                    )
+                    time.sleep(0.5)  # rate limit of 2 requests per seconds
+                    embeddings.extend(
+                        [emb.embedding for emb in embeddings_batch_response.data]
+                    )
                 return embeddings
             else:
                 raise MistralAPIException(e) from e
 
-    def split_big_batches(self, documents: Documents, batch_token_limit=12000) -> list[Documents]:
+    def split_big_batches(
+        self, documents: Documents, batch_token_limit=12000
+    ) -> list[Documents]:
         """The max token limit of a single batch api cal for mistral ai is 16384 tokens.
         This functions splits batches that are to big into smaller subatches
 
@@ -83,7 +86,8 @@ class MistralAIEmbeddingFunction(AbstractEmbeddingFunction):
         if curr_batch:
             subatches.append(curr_batch)
 
-        assert len(documents) == len([d for subbatch in subatches for d in subbatch]),\
-        f"Got {len(documents)} documents in input, but only {len([d for subbatch in subatches for d in subbatch])} document in subbatches"
+        assert (
+            len(documents) == len([d for subbatch in subatches for d in subbatch])
+        ), f"Got {len(documents)} documents in input, but only {len([d for subbatch in subatches for d in subbatch])} document in subbatches"
 
         return subatches
