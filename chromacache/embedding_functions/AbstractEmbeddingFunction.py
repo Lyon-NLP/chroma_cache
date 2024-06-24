@@ -1,13 +1,15 @@
 try:
-    __import__('pysqlite3')
+    __import__("pysqlite3")
     import sys
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except:
+
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+except Exception:
     pass
 
 from abc import ABC, abstractmethod
+
 import tiktoken
-from chromadb import EmbeddingFunction, Documents, Embeddings
+from chromadb import Documents, EmbeddingFunction, Embeddings
 
 
 class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
@@ -25,6 +27,32 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
     def model_name(self):
         pass
 
+    @staticmethod
+    def _truncate_documents(
+        tokenizer, sentences: Documents, max_token_length: int
+    ) -> Documents:
+        """Truncates the sentences considering the max context window of the model
+
+        Args:
+            tokenizer : the tokenizer
+            sentences (Documents): a list a sentences (documents)
+            max_token_length (int): the maximum token length
+
+        Returns:
+            Documents: the truncated documents
+        """
+        truncated_input = []
+        for s in sentences:
+            tokenized_string = tokenizer.encode(s)
+            # if string too large, truncate, decode, and replace
+            if len(tokenized_string) > max_token_length:
+                tokenized_string = tokenized_string[:max_token_length]
+                truncated_input.append(tokenizer.decode(tokenized_string))
+            else:
+                truncated_input.append(s)
+
+        return truncated_input
+
     def truncate_documents(self, sentences: Documents) -> Documents:
         """Truncates the sentences considering the max context window of the model
 
@@ -34,17 +62,9 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         Returns:
             Documents: the truncated documents
         """
-        truncated_input = []
-        for s in sentences:
-            tokenized_string = self.tokenizer.encode(s)
-            # if string too large, truncate, decode, and replace
-            if len(tokenized_string) > self.max_token_length:
-                tokenized_string = tokenized_string[: self.max_token_length]
-                truncated_input.append(self.tokenizer.decode(tokenized_string))
-            else:
-                truncated_input.append(s)
-
-        return truncated_input
+        return self._truncate_documents(
+            self.tokenizer, sentences, self.max_token_length
+        )
 
     def __call__(self, input: Documents) -> Embeddings:
         """Wrapper that truncates the documents, encodes them
@@ -74,5 +94,4 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         Returns:
             Embeddings: list of embeddings
         """
-
         raise NotImplementedError()
