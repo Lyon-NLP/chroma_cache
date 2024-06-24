@@ -70,7 +70,7 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         """Wrapper that truncates the documents, encodes them
 
         Args:
-            documents (Documents): List of documents
+            input (Documents): List of documents
 
         Returns:
             Embeddings: the encoded sentences

@@ -1,2 +1,2 @@
-from .chromacache import ChromaCache
+from .chromacache import *
 from .embedding_functions import *
