@@ -16,6 +16,11 @@ Here are the installation steps:
 - 2) Activate your python environment (or shell)
 - 3) when your are in this repository, run ``pip install .`` to install this repo as a package
 
+⚠️ if you run into an error due to faiseq, this is du to incompatibility between fairseq, win11 and python > 3.9. Either downgrade your python version, or install this fix in your environment : 
+```bash
+pip install fairseq git+https://github.com/liyaodev/fairseq.git 
+```
+
 ***TODO*** : Add instruction for installation as pypi package
 
 ## Usage 

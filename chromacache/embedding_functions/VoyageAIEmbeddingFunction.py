@@ -1,13 +1,15 @@
 import os
 import time
+
+import voyageai as vai
 from chromadb import Documents, Embeddings
 from dotenv import load_dotenv
-import voyageai as vai
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
 
 # load the API key from .env
 load_dotenv()
+
 
 class VoyageAIEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
@@ -33,5 +35,7 @@ class VoyageAIEmbeddingFunction(AbstractEmbeddingFunction):
         return self._model_name
 
     def encode_documents(self, documents: Documents) -> Embeddings:
-        time.sleep(0.1) # avoid api throttling
-        return self.client.embed(documents, model=self._model_name, input_type=None, truncation=True).embeddings
+        time.sleep(0.1)  # avoid api throttling
+        return self.client.embed(
+            documents, model=self._model_name, input_type=None, truncation=True
+        ).embeddings

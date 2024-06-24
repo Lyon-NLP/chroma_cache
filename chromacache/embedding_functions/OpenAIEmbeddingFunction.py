@@ -1,11 +1,10 @@
 import os
+
 from chromadb import Documents, Embeddings
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction as OAIEMbFunc
 from dotenv import load_dotenv
-from openai import OpenAI
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction as OAIEMbFunc
-
 
 # load the API key from .env
 load_dotenv()
