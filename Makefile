@@ -12,5 +12,5 @@ lint-check:
 	ruff format . --check
 	ruff check **/*.py 
 
-test:
-	pytest -n auto 
+tests:
+	pytest -n 5 

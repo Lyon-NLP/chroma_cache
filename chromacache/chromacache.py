@@ -1,14 +1,5 @@
-try:
-    import chromadb
-    from chromadb import Documents, EmbeddingFunction, Embeddings
-except Exception:
-    __import__("pysqlite3")
-    import sys
-
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-
-    import chromadb
-    from chromadb import EmbeddingFunction
+import chromadb
+from chromadb import Documents, EmbeddingFunction, Embeddings
 
 
 class ChromaCache:
