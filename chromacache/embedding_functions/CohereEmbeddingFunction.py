@@ -4,11 +4,11 @@ from chromadb.utils.embedding_functions import CohereEmbeddingFunction as CoEmbF
 import cohere
 from dotenv import load_dotenv
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
+from .AbstractEmbeddingFunction import AbstractEmbeddingFunction, register
 
 load_dotenv()
 
-
+@register("CohereEmbeddingFunction")
 class CohereEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
             self, 

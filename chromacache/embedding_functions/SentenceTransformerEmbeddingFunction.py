@@ -2,7 +2,7 @@ import torch
 from sentence_transformers import SentenceTransformer
 from chromadb import Documents, Embeddings
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
+from .AbstractEmbeddingFunction import AbstractEmbeddingFunction, register
 
 """
 IMPORTANT: This script is used to override this :
@@ -11,7 +11,7 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 as the embedding function provided by chroma generates bug for not native sentence_transformer models
 """
 
-
+@register("SentenceTransformerEmbeddingFunction")
 class SentenceTransformerEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
         self,

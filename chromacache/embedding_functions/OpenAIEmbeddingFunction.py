@@ -3,14 +3,14 @@ from chromadb import Documents, Embeddings
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
+from .AbstractEmbeddingFunction import AbstractEmbeddingFunction, register
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction as OAIEMbFunc
 
 
 # load the API key from .env
 load_dotenv()
 
-
+@register("OpenAIEmbeddingFunction")
 class OpenAIEmbeddingFunction(AbstractEmbeddingFunction, OAIEMbFunc):
     def __init__(
         self,

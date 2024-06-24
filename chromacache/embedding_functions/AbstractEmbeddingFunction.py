@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 try:
     __import__('pysqlite3')
     import sys
@@ -11,6 +13,8 @@ from chromadb import EmbeddingFunction, Documents, Embeddings
 
 
 class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
+    REGISTRY: dict[str, AbstractEmbeddingFunction] = {}
+
     def __init__(
         self,
         max_token_length: int = 4096,
@@ -24,6 +28,29 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
     @abstractmethod
     def model_name(self):
         pass
+
+    # def __init_subclass__(cls, **kwargs):
+    #     super().__init_subclass__(**kwargs)
+    #     # cls.register(cls)
+    #     name = cls.__class__.__name__
+    #     cls.REGISTRY[name] = cls
+
+    @classmethod
+    def register(cls, class_: AbstractEmbeddingFunction) -> None:
+        name = class_.__class__.__name__
+        cls.REGISTRY[name] = class_
+    
+    @classmethod
+    def get(cls, name: str) -> AbstractEmbeddingFunction:
+        return cls.REGISTRY[name]
+
+    @classmethod
+    def get_all_embedding_functions_names(cls) -> list[str]:
+        return list(cls.REGISTRY.keys())
+    
+    @classmethod
+    def get_all_embedding_functions(cls) -> list[AbstractEmbeddingFunction]:
+        return list(cls.REGISTRY.values())
 
     def truncate_documents(self, sentences: Documents) -> Documents:
         """Truncates the sentences considering the max context window of the model

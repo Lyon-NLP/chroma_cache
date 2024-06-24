@@ -3,9 +3,9 @@ import os
 from chromadb import Documents, Embeddings
 from laser_encoders import LaserEncoderPipeline
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
+from .AbstractEmbeddingFunction import AbstractEmbeddingFunction, register
 
-
+@register("LaserEmbeddingFunction")
 class LaserEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
         self,

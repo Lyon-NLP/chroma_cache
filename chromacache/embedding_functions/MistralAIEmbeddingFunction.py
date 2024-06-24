@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 from mistralai.client import MistralClient
 from mistralai.exceptions import MistralAPIException
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
+from .AbstractEmbeddingFunction import AbstractEmbeddingFunction, register
 
 
 # load the API key from .env
 load_dotenv()
 
-
+@register("MistralAIEmbeddingFunction")
 class MistralAIEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
         self,
