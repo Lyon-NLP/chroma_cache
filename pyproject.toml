@@ -22,11 +22,10 @@ dependencies = [
   "voyageai>=0.1.6",
   "tiktoken>=0.5.2",
   "openai>=1.6.1",
-  "chromadb>=0.4.21",
+  "chromadb>=0.5.2",
   "python-dotenv>=1.0.1",
   "cohere==4.41",
-  "laser_encoders==0.0.1",
-  "sentence-transformers==2.2.2",
+  "sentence-transformers==3.0.1",
   "mistralai==0.0.12"
 ]
 
