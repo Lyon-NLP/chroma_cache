@@ -29,8 +29,8 @@ pip install fairseq git+https://github.com/liyaodev/fairseq.git
 from chromacache import ChromaCache
 from chromacache.embedding_functions import OpenAIEmbeddingFunction
 
-MODEL_NAME = "text-embedding-small" # or any embedding model name
-emb_function = OpenaiEmbeddingFunction() # or any embedding function available
+MODEL_NAME = "text-embedding-3-small" # or any embedding model name
+emb_function = OpenAIEmbeddingFunction() # or any embedding function available
 cc = ChromaCache(OpenAIEmbeddingFunction(MODEL_NAME)) # creates a collection in chroma
 
 embeddings = cc.encode(["my sentence", "my other sentence"])
