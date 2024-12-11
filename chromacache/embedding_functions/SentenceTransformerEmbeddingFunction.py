@@ -1,27 +1,17 @@
-import torch
 from chromadb import Documents, Embeddings
+import torch
 from sentence_transformers import SentenceTransformer
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-
-"""
-IMPORTANT: This script is used to override this :
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-
-as the embedding function provided by chroma generates bug for not native sentence_transformer models
-"""
 
 
 class SentenceTransformerEmbeddingFunction(AbstractEmbeddingFunction):
     def __init__(
         self,
         model_name: str = "dangvantuan/sentence-camembert-base",
-        max_token_length: int = 4096,
-        normalize_embeddings=True,
+        normalize_embeddings: bool = True,
     ):
-        super().__init__(max_token_length)
-
-        self._model_name = model_name
+        AbstractEmbeddingFunction.__init__(self, model_name=model_name)
         self.normalize_embeddings = normalize_embeddings
 
         self.model = SentenceTransformer(
@@ -29,8 +19,12 @@ class SentenceTransformerEmbeddingFunction(AbstractEmbeddingFunction):
         )
 
     @property
-    def model_name(self):
-        return self._model_name
+    def litellm_provider_prefix(self):
+        return None
+
+    @property
+    def api_key_name(self):
+        return None
 
     def encode_documents(self, documents: Documents) -> Embeddings:
         embeddings = self.model.encode(

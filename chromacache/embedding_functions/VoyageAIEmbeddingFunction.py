@@ -1,41 +1,24 @@
-import os
-import time
+from typing import Literal
 
-import voyageai as vai
-from chromadb import Documents, Embeddings
-from dotenv import load_dotenv
-
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-
-# load the API key from .env
-load_dotenv()
+from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
 
-class VoyageAIEmbeddingFunction(AbstractEmbeddingFunction):
+class VoyageAIEmbeddingFunction(LiteLLMEmbeddingFunction):
     def __init__(
         self,
         model_name: str = "voyage-code-2",
-        max_token_length: int = 4000,
+        max_requests_per_minute: int | None = None,
+        input_type: Literal["query", "document"] | None = None,
+        dimensions: int | None = None,
     ):
-        super().__init__(max_token_length)
-
-        self._model_name = model_name
-
-        api_key = os.environ.get("VOYAGE_API_KEY", None)
-        if api_key is None:
-            raise ValueError(
-                "Please make sure 'VOYAGE_API_KEY' is setup as an environment variable"
-            )
-        vai.api_key = api_key
-
-        self.client = vai.Client()
+        LiteLLMEmbeddingFunction.__init__(
+            model_name, dimensions, input_type, max_requests_per_minute
+        )
 
     @property
-    def model_name(self):
-        return self._model_name
+    def litellm_provider_prefix(self) -> str:
+        return "voyage"
 
-    def encode_documents(self, documents: Documents) -> Embeddings:
-        time.sleep(0.1)  # avoid api throttling
-        return self.client.embed(
-            documents, model=self._model_name, input_type=None, truncation=True
-        ).embeddings
+    @property
+    def api_key_name(self) -> str:
+        return "VOYAGE_API_KEY"

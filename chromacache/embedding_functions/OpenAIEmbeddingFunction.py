@@ -1,35 +1,24 @@
-import os
-
-from chromadb import Documents, Embeddings
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction as OAIEMbFunc
-from dotenv import load_dotenv
-
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-
-# load the API key from .env
-load_dotenv()
+from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
 
-class OpenAIEmbeddingFunction(AbstractEmbeddingFunction, OAIEMbFunc):
+class OpenAIEmbeddingFunction(LiteLLMEmbeddingFunction):
+    """Embedding function for OpenAI"""
+
     def __init__(
         self,
-        model_name: str = "text-embedding-small",
-        max_token_length: int = 8191,
+        model_name: str = "text-embedding-3-small",
+        dimensions: int | None = None,
+        input_type: str | None = None,
+        max_requests_per_minute: int | None = None,
     ):
-        AbstractEmbeddingFunction.__init__(self, max_token_length=max_token_length)
-
-        api_key = os.environ.get("OPENAI_API_KEY", None)
-        if api_key is None:
-            raise ValueError(
-                "Please make sure 'OPENAI_API_KEY' is setup as an environment variable"
-            )
-        OAIEMbFunc.__init__(self, api_key=api_key, model_name=model_name)
+        LiteLLMEmbeddingFunction.__init__(
+            model_name, dimensions, input_type, max_requests_per_minute
+        )
 
     @property
-    def model_name(self):
-        return self._model_name
+    def api_key_name(self):
+        return "OPENAI_API_KEY"
 
-    def encode_documents(self, documents: Documents) -> Embeddings:
-        # replace empty string by space to avoid API error
-        documents = [i if i else " " for i in documents]
-        return OAIEMbFunc.__call__(self, documents)
+    @property
+    def litellm_provider_prefix(self):
+        return "openai"
