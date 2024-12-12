@@ -8,11 +8,10 @@ class MistralAIEmbeddingFunction(LiteLLMEmbeddingFunction):
         self,
         model_name: str = "mistral-embed",
         dimensions: int | None = None,
-        input_type: str | None = None,
         max_requests_per_minute: int = 300,
     ) -> None:
         LiteLLMEmbeddingFunction.__init__(
-            model_name, dimensions, input_type, max_requests_per_minute
+            self, model_name, dimensions, max_requests_per_minute
         )
 
     @property

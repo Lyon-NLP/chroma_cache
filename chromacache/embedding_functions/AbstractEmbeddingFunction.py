@@ -24,7 +24,6 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> mis
     @abstractmethod
     def collection_name(self) -> str:
         """Used as the collection name by chroma cache. Must lead to unique name per model"""
-        return self.model_name
 
     def __call__(self, documents: Documents) -> Embeddings:
         """Encodes the documents
@@ -51,4 +50,4 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> mis
         Returns:
             Embeddings: list of embeddings
         """
-        raise NotImplementedError()
+        pass

@@ -6,34 +6,30 @@ build-backend = "setuptools.build_meta"
 name = "chromacache"
 version = "0.0.1"
 authors = [
-  { name="Mathieu Ciancone", email="mathieu@wikit.ai" },
-  { name="Imene Kerboua", email="imenelkerboua@gmail.com"}
+  { name = "Mathieu Ciancone", email = "mathieu@wikit.ai" },
+  { name = "Imene Kerboua", email = "imenelkerboua@gmail.com" },
 ]
 description = "A helper tool that simplifies caching embeddings for reusability."
 keywords = ["chromadb", "vectorestore", "embeddings", "cache"]
-readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.10"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.12"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
 ]
-dependencies = [
-  "voyageai>=0.1.6",
-  "tiktoken>=0.5.2",
-  "openai>=1.6.1",
-  "chromadb>=0.5.2",
-  "python-dotenv>=1.0.1",
-  "cohere==4.41",
-  "sentence-transformers==3.0.1",
-  "mistralai==0.4.1"
-]
+
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
 
 [project.urls]
 Homepage = "https://github.com/Lyon-NLP/chroma_cache"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.0.254", "pytest", "pytest-xdist"]
+st = ["sentence-transformers == 3.3.1"]
 
 [tool.setuptools.packages.find]
 exclude = ["tests", "results"]
@@ -43,17 +39,18 @@ target-version = "py38"
 
 [tool.ruff.lint]
 select = ["F", "I", "E", "D"]
-ignore = ["E501",   # line too long 
-        "E741",     # ambiguous variable name
-        "F403",     # undefined import
-        "D100",     # Missing docstring in public module
-        "D101",     # Missing docstring in public class
-        "D102",     # Missing docstring in public method
-        "D103",     # Missing docstring in public function
-        "D104",     # Missing docstring in public package
-        "D107",     # Missing docstring in __init__
-        "D205",     # 1 blank line required between summary line and description
-        "D415",     # First line should end with a period
+ignore = [
+  "E501", # line too long 
+  "E741", # ambiguous variable name
+  "F403", # undefined import
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D103", # Missing docstring in public function
+  "D104", # Missing docstring in public package
+  "D107", # Missing docstring in __init__
+  "D205", # 1 blank line required between summary line and description
+  "D415", # First line should end with a period
 ]
 ignore-init-module-imports = true
 

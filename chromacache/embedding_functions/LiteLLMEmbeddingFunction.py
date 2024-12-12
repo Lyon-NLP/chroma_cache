@@ -15,19 +15,16 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
 
     model_name: str
     dimensions: int | None
-    input_type: str | None
     max_requests_per_minute: int | None
 
     def __init__(
         self,
         model_name: str,
         dimensions: int | None = None,
-        input_type: str | None = None,
         max_requests_per_minute: int | None = None,
     ) -> None:
         AbstractEmbeddingFunction.__init__(self, model_name=model_name)
         self.dimensions = dimensions
-        self.input_type = input_type
         self.sleep_time = (
             60 / max_requests_per_minute if max_requests_per_minute is not None else 0
         )
@@ -87,7 +84,6 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
         response = embedding(
             model=f"{self.litellm_provider_prefix}/{self.model_name}",
             input=documents,
-            input_type=self.input_type,
             dimensions=self.dimensions,
         )
 

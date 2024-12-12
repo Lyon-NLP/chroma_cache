@@ -1,12 +1,7 @@
-voyageai>=0.1.6,
-tiktoken>=0.5.2,
-openai>=1.6.1,
-chromadb>=0.4.21,
-python-dotenv>=1.0.1,
-cohere==4.41,
-laser_encoders==0.0.1,
-sentence-transformers==2.2.2,
-mistralai==0.0.12
+tiktoken==0.8.0,
+chromadb>=0.5.23,
+python-dotenv==1.0.1,
+litellm==1.54.1
 
 # if using python > 3.10 : # fix Win11 + python 3.11 + faiseq incompatibility using this : (run as admin)
 # fairseq git+https://github.com/liyaodev/fairseq.git 

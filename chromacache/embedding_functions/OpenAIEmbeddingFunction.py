@@ -8,11 +8,10 @@ class OpenAIEmbeddingFunction(LiteLLMEmbeddingFunction):
         self,
         model_name: str = "text-embedding-3-small",
         dimensions: int | None = None,
-        input_type: str | None = None,
         max_requests_per_minute: int | None = None,
     ):
         LiteLLMEmbeddingFunction.__init__(
-            model_name, dimensions, input_type, max_requests_per_minute
+            self, model_name, dimensions, max_requests_per_minute
         )
 
     @property

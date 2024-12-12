@@ -20,7 +20,7 @@ class OVHAIEmbeddingFunction(LiteLLMEmbeddingFunction):
             60 / max_requests_per_minute if max_requests_per_minute is not None else 0
         )
         self.endpoint = (
-            f"https://{model_name}.endpoints.kepler.ai.cloud.ovh.net/api/text2vec"
+            f"https://{model_name}.endpoints.kepler.ai.cloud.ovh.net/api/batch_text2vec"
         )
 
     @property

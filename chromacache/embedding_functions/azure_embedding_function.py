@@ -12,11 +12,10 @@ class AzureEmbeddingFunction(LiteLLMEmbeddingFunction):
         self,
         model_name: str = "text-embedding-3-large",
         dimensions: int | None = None,
-        input_type: str | None = None,
         max_requests_per_minute: int | None = None,
     ) -> None:
         LiteLLMEmbeddingFunction.__init__(
-            self, model_name, dimensions, input_type, max_requests_per_minute
+            self, model_name, dimensions, max_requests_per_minute
         )
 
     @property
@@ -61,7 +60,6 @@ class AzureEmbeddingFunction(LiteLLMEmbeddingFunction):
             api_base=self.azure_api_base,
             api_version=self.azure_api_version,
             dimensions=self.dimensions,
-            input_type=self.input_type,
         )
 
         return [resp["embedding"] for resp in response.data]  # type: ignore --> missing typing for response.data

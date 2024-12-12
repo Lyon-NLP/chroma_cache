@@ -19,12 +19,8 @@ class SentenceTransformerEmbeddingFunction(AbstractEmbeddingFunction):
         )
 
     @property
-    def litellm_provider_prefix(self):
-        return None
-
-    @property
-    def api_key_name(self):
-        return None
+    def collection_name(self):
+        return "st_" + self.model_name
 
     def encode_documents(self, documents: Documents) -> Embeddings:
         embeddings = self.model.encode(
