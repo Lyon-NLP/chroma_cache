@@ -1,41 +1,48 @@
-import os
-import time
+from typing import Literal
 
-import voyageai as vai
 from chromadb import Documents, Embeddings
-from dotenv import load_dotenv
+from litellm import embedding
 
-from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
-
-# load the API key from .env
-load_dotenv()
+from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
 
-class VoyageAIEmbeddingFunction(AbstractEmbeddingFunction):
+class VoyageAIEmbeddingFunction(LiteLLMEmbeddingFunction):
     def __init__(
         self,
         model_name: str = "voyage-code-2",
-        max_token_length: int = 4000,
+        dimensions: int | None = None,
+        max_requests_per_minute: int | None = None,
+        input_type: Literal["query", "document"] | None = None,
     ):
-        super().__init__(max_token_length)
-
-        self._model_name = model_name
-
-        api_key = os.environ.get("VOYAGE_API_KEY", None)
-        if api_key is None:
-            raise ValueError(
-                "Please make sure 'VOYAGE_API_KEY' is setup as an environment variable"
-            )
-        vai.api_key = api_key
-
-        self.client = vai.Client()
+        LiteLLMEmbeddingFunction.__init__(
+            self, model_name, dimensions, max_requests_per_minute
+        )
+        self.input_type = input_type
 
     @property
-    def model_name(self):
-        return self._model_name
+    def api_key_name(self) -> str:
+        return "VOYAGE_API_KEY"
+
+    @property
+    def litellm_provider_prefix(self) -> str:
+        return "voyage"
 
     def encode_documents(self, documents: Documents) -> Embeddings:
-        time.sleep(0.1)  # avoid api throttling
-        return self.client.embed(
-            documents, model=self._model_name, input_type=None, truncation=True
-        ).embeddings
+        """Takes a list of strings and returns the corresponding embedding
+
+        Args:
+            documents (Documents): list of documents (strings)
+
+        Returns:
+            Embeddings: list of embeddings
+        """
+        # replace empty string to avoid errors with apis
+        documents = [d if d else " " for d in documents]
+        response = embedding(
+            model=f"{self.litellm_provider_prefix}/{self.model_name}",
+            input=documents,
+            # input_type=self.input_type, # Kept here as a placeholder. Unfortunately litellm doesn't allow for passing this param yet.
+            dimensions=self.dimensions,
+        )
+
+        return [resp["embedding"] for resp in response.data]  # type: ignore --> missing typing for response.data

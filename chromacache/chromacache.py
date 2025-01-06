@@ -9,10 +9,12 @@ except Exception:
 
     import chromadb
     from chromadb import EmbeddingFunction
+import tiktoken
+from tqdm import tqdm
 
 
 class ChromaCache:
-    """Handles the mecanics of producing and saving embeddings in chromaDB
+    """Handles the mechanics of producing and saving embeddings in chromaDB
     It needs an embedding function, as described in the chromaDB's docs : https://docs.trychroma.com/embeddings
     This embedding function specifies the way embeddings are obtained, from a model or api
     """
@@ -22,8 +24,8 @@ class ChromaCache:
         embedding_function: EmbeddingFunction = None,
         batch_size: int = 32,
         save_embbedings: bool = True,
-        path_to_chromadb="./ChromaDB",
-        **kwargs,
+        path_to_chromadb: str = "./ChromaDB",
+        max_token_length: int = 8191,
     ):
         self.batch_size = batch_size
         self.save_embbeddings = save_embbedings
@@ -36,19 +38,24 @@ class ChromaCache:
 
         # setup the chromaDB collection
         self.client = chromadb.PersistentClient(path=path_to_chromadb)
-        collection_name = embedding_function.model_name.replace("/", "-")[:63]
+        collection_name = embedding_function.collection_name.replace("/", "-")[:63]
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
             embedding_function=self.embedding_function,
             metadata={"hnsw:space": "cosine"},
         )
 
+        self.max_token_length = max_token_length
+        # Use tiktoken to compute token length
+        # As we may not know the exact tokenizer used for the model, we generically use the one of adav2
+        self.tokenizer = tiktoken.get_encoding("cl100k_base")
+
     @staticmethod
     def list_embedding_functions():
         # TODO : function to list the available embedding functions
         raise NotImplementedError
 
-    def encode(self, sentences: Documents, **kwargs) -> Embeddings:
+    def encode(self, sentences: Documents) -> Embeddings:
         """Encodes the provided sentences et gets their embeddings
         using the EmbeddingFunction that has been set.
         It works like so :
@@ -58,7 +65,6 @@ class ChromaCache:
 
         Args:
             sentences (Documents): the list of strings that must be encoded
-            **kwargs: additional keyword arguments.
 
         Returns:
             Embeddings: the list of embeddings corresponding the the list of strings
@@ -73,8 +79,11 @@ class ChromaCache:
         # use a dict to store a mapping of {sentence: embedding}
         # we have to do this because collection.get() returns embeddings in a random order...
         sent_emb_mapping = {}
-        for i in range(0, len(unique_sentences), self.batch_size):
+
+        for i in tqdm(range(0, len(unique_sentences), self.batch_size)):
+            # create batch and truncate
             batch_sentences = unique_sentences[i : i + self.batch_size]
+            batch_sentences = self.truncate_documents(batch_sentences)
             # check if we have the embedding in chroma
             sentences_in_chroma = self.collection.get(
                 ids=batch_sentences, include=["documents", "embeddings"]
@@ -119,3 +128,17 @@ class ChromaCache:
                     )
         # return embeddings in correct order
         return [sent_emb_mapping[s] for s in sentences]
+
+    def truncate_documents(self, sentences: Documents) -> Documents:
+        """Truncates the sentences considering the max context window of the model
+
+        Args:
+            sentences (Documents): a list a sentences (documents)
+
+        Returns:
+            Documents: the truncated documents
+        """
+        return [
+            self.tokenizer.decode(self.tokenizer.encode(s)[: self.max_token_length])
+            for s in sentences
+        ]

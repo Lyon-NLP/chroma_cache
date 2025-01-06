@@ -8,66 +8,25 @@ except Exception:
 
 from abc import ABC, abstractmethod
 
-import tiktoken
 from chromadb import Documents, EmbeddingFunction, Embeddings
 
 
-class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
+class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> missing typing in chromaDB
+    """Base class for all embedding functions"""
+
     def __init__(
         self,
-        max_token_length: int = 4096,
-    ):
-        self.max_token_length = max_token_length
-        # Use tiktoken to compute token length
-        # As we may not know the exact tokenizer used for the model, we generically use the one of adav2
-        self.tokenizer = tiktoken.get_encoding("cl100k_base")
+        model_name: str,
+    ) -> None:
+        self.model_name = model_name
 
     @property
     @abstractmethod
-    def model_name(self):
-        pass
+    def collection_name(self) -> str:
+        """Used as the collection name by chroma cache. Must lead to unique name per model"""
 
-    @staticmethod
-    def _truncate_documents(
-        tokenizer, sentences: Documents, max_token_length: int
-    ) -> Documents:
-        """Truncates the sentences considering the max context window of the model
-
-        Args:
-            tokenizer : the tokenizer
-            sentences (Documents): a list a sentences (documents)
-            max_token_length (int): the maximum token length
-
-        Returns:
-            Documents: the truncated documents
-        """
-        truncated_input = []
-        for s in sentences:
-            tokenized_string = tokenizer.encode(s)
-            # if string too large, truncate, decode, and replace
-            if len(tokenized_string) > max_token_length:
-                tokenized_string = tokenized_string[:max_token_length]
-                truncated_input.append(tokenizer.decode(tokenized_string))
-            else:
-                truncated_input.append(s)
-
-        return truncated_input
-
-    def truncate_documents(self, sentences: Documents) -> Documents:
-        """Truncates the sentences considering the max context window of the model
-
-        Args:
-            sentences (Documents): a list a sentences (documents)
-
-        Returns:
-            Documents: the truncated documents
-        """
-        return self._truncate_documents(
-            self.tokenizer, sentences, self.max_token_length
-        )
-
-    def __call__(self, input: Documents) -> Embeddings:
-        """Wrapper that truncates the documents, encodes them
+    def __call__(self, documents: Documents) -> Embeddings:
+        """Encodes the documents
 
         Args:
             documents (Documents): List of documents
@@ -75,10 +34,7 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         Returns:
             Embeddings: the encoded sentences
         """
-        truncated_input = self.truncate_documents(input)
-        embeddings = self.encode_documents(truncated_input)
-
-        return embeddings
+        return self.encode_documents(documents)
 
     @abstractmethod
     def encode_documents(self, documents: Documents) -> Embeddings:
@@ -94,4 +50,4 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):
         Returns:
             Embeddings: list of embeddings
         """
-        raise NotImplementedError()
+        pass
