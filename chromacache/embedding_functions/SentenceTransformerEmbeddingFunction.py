@@ -15,7 +15,7 @@ class SentenceTransformerEmbeddingFunction(AbstractEmbeddingFunction):
         self.normalize_embeddings = normalize_embeddings
 
         self.model = SentenceTransformer(
-            model_name, device="cuda" if torch.cuda.is_available() else "cpu"
+            model_name, device="cuda" if torch.cuda.is_available() else "cpu", trust_remote_code=True,
         )
 
     @property
