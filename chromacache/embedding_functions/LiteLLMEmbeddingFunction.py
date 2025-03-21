@@ -24,7 +24,10 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
         max_requests_per_minute: int | None = None,
     ) -> None:
         AbstractEmbeddingFunction.__init__(self, model_name=model_name)
+        if dimensions is not None and dimensions < 0:
+            raise ValueError("Argument 'dimension' must be a positive integer.")
         self.dimensions = dimensions
+
         self.max_requests_per_minute = max_requests_per_minute
         self.check_api_key()
 
