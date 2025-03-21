@@ -5,6 +5,7 @@ from .OpenAIEmbeddingFunction import OpenAIEmbeddingFunction
 from .VoyageAIEmbeddingFunction import VoyageAIEmbeddingFunction
 from .azure_embedding_function import AzureEmbeddingFunction
 from .ovh_embedding_function import OVHAIEmbeddingFunction
+from .scaleway_embedding_function import ScalewayEmbeddingFunction
 
 try:
     from .SentenceTransformerEmbeddingFunction import (
