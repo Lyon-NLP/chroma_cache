@@ -25,9 +25,7 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
     ) -> None:
         AbstractEmbeddingFunction.__init__(self, model_name=model_name)
         self.dimensions = dimensions
-        self.sleep_time = (
-            60 / max_requests_per_minute if max_requests_per_minute is not None else 0
-        )
+        self.max_requests_per_minute = max_requests_per_minute
         self.check_api_key()
 
     @property
@@ -39,6 +37,15 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
     @abstractmethod
     def litellm_provider_prefix(self) -> str:
         """the prefix to use to specify provider in litellm"""
+
+    @property
+    def sleep_time(self) -> float:
+        """time to sleep between two request"""
+        return (
+            60 / self.max_requests_per_minute
+            if self.max_requests_per_minute is not None
+            else 0
+        )
 
     @property
     def collection_name(self) -> str:
