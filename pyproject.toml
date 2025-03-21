@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chromacache"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name = "Mathieu Ciancone", email = "mathieu@wikit.ai" },
   { name = "Imene Kerboua", email = "imenelkerboua@gmail.com" },
