@@ -1,7 +1,7 @@
-tiktoken==0.8.0,
+tiktoken>=0.8.0,
 chromadb>=0.5.23,
-python-dotenv==1.0.1,
-litellm==1.54.1
+python-dotenv>=1.0.1,
+litellm>=1.54.1
 
 # if using python > 3.10 : # fix Win11 + python 3.11 + faiseq incompatibility using this : (run as admin)
 # fairseq git+https://github.com/liyaodev/fairseq.git 
