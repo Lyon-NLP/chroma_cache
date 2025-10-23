@@ -29,7 +29,7 @@ Homepage = "https://github.com/Lyon-NLP/chroma_cache"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.0.254", "pytest", "pytest-xdist"]
-st = ["sentence-transformers == 3.3.1"]
+st = ["sentence-transformers >= 3.3.1"]
 
 [tool.setuptools.packages.find]
 exclude = ["tests", "results"]
