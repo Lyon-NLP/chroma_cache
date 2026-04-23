@@ -1,7 +1,8 @@
 from typing import Literal
 
-from chromadb import Documents, Embeddings
 from litellm import embedding
+
+from chromadb import Documents, Embeddings
 
 from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
@@ -26,6 +27,20 @@ class VoyageAIEmbeddingFunction(LiteLLMEmbeddingFunction):
     @property
     def litellm_provider_prefix(self) -> str:
         return "voyage"
+
+    @property
+    def collection_name(self) -> str:
+        # input_type is intentionally excluded: litellm doesn't forward it to
+        # the API yet (see commented-out line in encode_documents), so all
+        # input_type values produce identical embeddings and should share one
+        # cache collection.  Re-add it here once litellm supports the param.
+        return "_".join(
+            [
+                self.litellm_provider_prefix,
+                f"dim-{self.dimensions}",
+                self.model_name,
+            ]
+        )
 
     def encode_documents(self, documents: Documents) -> Embeddings:
         """Takes a list of strings and returns the corresponding embedding

@@ -6,6 +6,7 @@ try:
 except Exception:
     pass
 
+import time
 from abc import ABC, abstractmethod
 
 from chromadb import Documents, EmbeddingFunction, Embeddings
@@ -17,8 +18,19 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> mis
     def __init__(
         self,
         model_name: str,
+        max_requests_per_minute: int | None = None,
     ) -> None:
         self.model_name = model_name
+        self.max_requests_per_minute = max_requests_per_minute
+
+    @property
+    def sleep_time(self) -> float:
+        """Seconds to sleep between requests to stay within the rate limit."""
+        return (
+            60 / self.max_requests_per_minute
+            if self.max_requests_per_minute is not None
+            else 0
+        )
 
     @property
     @abstractmethod
@@ -26,7 +38,10 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> mis
         """Used as the collection name by chroma cache. Must lead to unique name per model"""
 
     def __call__(self, documents: Documents) -> Embeddings:
-        """Encodes the documents
+        """Encodes the documents and applies rate-limit sleep if configured.
+
+        The sleep accounts for the time already spent encoding, so only the
+        remaining portion of the inter-request interval is waited.
 
         Args:
             documents (Documents): List of documents
@@ -34,7 +49,14 @@ class AbstractEmbeddingFunction(EmbeddingFunction, ABC):  # type: ignore --> mis
         Returns:
             Embeddings: the encoded sentences
         """
-        return self.encode_documents(documents)
+        start = time.monotonic()
+        embeddings = self.encode_documents(documents)
+        if self.sleep_time:
+            elapsed = time.monotonic() - start
+            remaining = self.sleep_time - elapsed
+            if remaining > 0:
+                time.sleep(remaining)
+        return embeddings
 
     @abstractmethod
     def encode_documents(self, documents: Documents) -> Embeddings:

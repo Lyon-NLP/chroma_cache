@@ -1,8 +1,9 @@
-from abc import abstractmethod
 import os
-import time
+from abc import abstractmethod
+
 from dotenv import load_dotenv
 from litellm import embedding
+
 from chromadb import Documents, Embeddings
 
 from .AbstractEmbeddingFunction import AbstractEmbeddingFunction
@@ -11,11 +12,10 @@ load_dotenv()
 
 
 class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
-    """Base class for all embedding function dervied from litellm"""
+    """Base class for all embedding function derived from litellm"""
 
     model_name: str
     dimensions: int | None
-    max_requests_per_minute: int | None
 
     def __init__(
         self,
@@ -23,32 +23,28 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
         dimensions: int | None = None,
         max_requests_per_minute: int | None = None,
     ) -> None:
-        AbstractEmbeddingFunction.__init__(self, model_name=model_name)
-        if dimensions is not None and dimensions < 0:
-            raise ValueError("Argument 'dimension' must be a positive integer.")
+        AbstractEmbeddingFunction.__init__(
+            self, model_name=model_name, max_requests_per_minute=max_requests_per_minute
+        )
+        if dimensions is not None and dimensions <= 0:
+            raise ValueError("Argument 'dimensions' must be a positive integer.")
         self.dimensions = dimensions
-
-        self.max_requests_per_minute = max_requests_per_minute
         self.check_api_key()
 
     @property
     @abstractmethod
     def api_key_name(self) -> str | list[str]:
-        """the name of the environment variable containing the api key"""
+        """The name(s) of the environment variable(s) containing the api key.
+
+        Return a single string for one variable, or a list of strings when
+        multiple variables are required (e.g. Azure needs API key, base, and
+        version).
+        """
 
     @property
     @abstractmethod
     def litellm_provider_prefix(self) -> str:
-        """the prefix to use to specify provider in litellm"""
-
-    @property
-    def sleep_time(self) -> float:
-        """time to sleep between two request"""
-        return (
-            60 / self.max_requests_per_minute
-            if self.max_requests_per_minute is not None
-            else 0
-        )
+        """The prefix to use to specify provider in litellm"""
 
     @property
     def collection_name(self) -> str:
@@ -56,29 +52,20 @@ class LiteLLMEmbeddingFunction(AbstractEmbeddingFunction):
             (self.litellm_provider_prefix, f"dim-{self.dimensions}", self.model_name)
         )
 
-    def check_api_key(self):
+    def check_api_key(self) -> None:
         """Ensure api key is set"""
-        if not self.api_key_name:
+        key_names = self.api_key_name
+        if not key_names:
             return
-        self.api_key = os.environ.get(self.api_key_name, None)
-        if self.api_key is None:
+        if isinstance(key_names, str):
+            key_names = [key_names]
+        missing = [k for k in key_names if not os.environ.get(k)]
+        if missing:
             raise ValueError(
-                f"Please make sure {self.api_key_name} is setup as an environment variable"
+                f"Please make sure {', '.join(missing)} "
+                f"{'are' if len(missing) > 1 else 'is'} set as an environment variable"
             )
-
-    def __call__(self, sentences: Documents) -> Embeddings:
-        """Encodes the documents
-
-        Args:
-            documents (Documents): List of documents
-
-        Returns:
-            Embeddings: the encoded sentences
-        """
-        embeddings = self.encode_documents(sentences)
-        if self.sleep_time:
-            time.sleep(self.sleep_time)
-        return embeddings
+        self.api_key: str = os.environ.get(key_names[0])
 
     def encode_documents(self, documents: Documents) -> Embeddings:
         """Takes a list of strings and returns the corresponding embedding

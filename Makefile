@@ -5,12 +5,13 @@ install-dev:
 	pip install ".[dev]"
 
 lint:
+	black chromacache/
 	ruff format .
 	ruff check . --fix
 
 lint-check:
 	ruff format . --check
-	ruff check **/*.py 
+	ruff check .
 
 test:
-	pytest -n auto 
+	pytest tests/ 
