@@ -1,7 +1,8 @@
 from typing import Literal
 
-from chromadb import Documents, Embeddings
 from litellm import embedding
+
+from chromadb import Documents, Embeddings
 
 from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
@@ -28,6 +29,17 @@ class CohereEmbeddingFunction(LiteLLMEmbeddingFunction):
     @property
     def litellm_provider_prefix(self):
         return "cohere"
+
+    @property
+    def collection_name(self) -> str:
+        return "_".join(
+            (
+                self.litellm_provider_prefix,
+                f"dim-{self.dimensions}",
+                self.model_name,
+                self.input_type,
+            )
+        )
 
     def encode_documents(self, documents: Documents) -> Embeddings:
         """Takes a list of strings and returns the corresponding embedding

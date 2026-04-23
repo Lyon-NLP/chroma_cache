@@ -12,12 +12,9 @@ In a nutshell :
 ## Installation
 
 Here are the installation steps:
-- 1) If you haven't already, clone this repository.
-- 2) Activate your python environment (or shell)
-- 3) when your are in this repository, run ``pip install .`` to install this repo as a package
-- 4) [Optionnal] To make the package lighter, sentence-transformers dependencies are optionnal. If you are planning to use models from HuggingFace 🤗 through the sentence-transfomer package, you may use ``pip install ".[st]"`` instead.
-
-***TODO*** : Add instruction for installation as pypi package
+- 1) Activate your python environment (or shell)
+- 2) run ``pip install git+https://github.com/Lyon-NLP/chroma_cache.git``
+- 3) [Optionnal] To make the package lighter, sentence-transformers dependencies are optionnal. If you are planning to use models from HuggingFace 🤗 through the sentence-transfomer package, you may use ``pip install ".[st]"`` instead.
 
 ## Usage 
 

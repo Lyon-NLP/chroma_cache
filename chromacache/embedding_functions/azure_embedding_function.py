@@ -1,7 +1,9 @@
 import os
 
 from litellm import embedding
+
 from chromadb import Documents, Embeddings
+
 from .LiteLLMEmbeddingFunction import LiteLLMEmbeddingFunction
 
 
@@ -19,7 +21,7 @@ class AzureEmbeddingFunction(LiteLLMEmbeddingFunction):
         )
 
     @property
-    def api_key_name(self) -> list[str]:
+    def api_key_name(self) -> list[str]:  # type: ignore[override]  # parent allows str | list[str]
         return ["AZURE_API_BASE", "AZURE_API_KEY", "AZURE_API_VERSION"]
 
     @property
@@ -48,11 +50,13 @@ class AzureEmbeddingFunction(LiteLLMEmbeddingFunction):
         """Get the embeddings for list of sentences
 
         Args:
-            sentences (list[str]): list of sentences
+            documents (Documents): list of documents to embed
 
         Raises:
             Exception: If api doesn't answer with status 200
         """
+        # Azure rejects empty strings; replace with a single space like other providers
+        documents = [d if d else " " for d in documents]
         response = embedding(
             model=f"{self.litellm_provider_prefix}/{self.model_name}",
             input=documents,
