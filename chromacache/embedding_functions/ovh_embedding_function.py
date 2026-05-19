@@ -15,7 +15,7 @@ class OVHAIEmbeddingFunction(OpenAIEmbeddingFunction):
             model_name=model_name,
             dimensions=dimensions,
             max_requests_per_minute=max_requests_per_minute,
-            base_url=f"https://{model_name}.endpoints.kepler.ai.cloud.ovh.net/api",
+            base_url="https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
             api_key_env_var="OVH_AI_ENDPOINTS_TOKEN",
         )
 
