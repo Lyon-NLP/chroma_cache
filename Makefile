@@ -14,4 +14,4 @@ lint-check:
 	ruff check .
 
 test:
-	pytest tests/ 
+	pytest tests/
