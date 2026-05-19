@@ -1,5 +1,5 @@
 tiktoken>=0.8.0,
-chromadb>=0.5.23,
+chromadb>=1.5.9,
 python-dotenv>=1.0.1,
 litellm>=1.54.1,
 openai>=1.0.0
